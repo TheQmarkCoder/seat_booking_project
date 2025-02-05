@@ -1,5 +1,7 @@
 package com.seat_booking_project.seat_booking_project.Services;
 
+import com.seat_booking_project.seat_booking_project.Entities.Event;
+import com.seat_booking_project.seat_booking_project.Repository.EventRepository;
 import com.seat_booking_project.seat_booking_project.dto.SeatDTO;
 import com.seat_booking_project.seat_booking_project.Entities.Seats;
 import com.seat_booking_project.seat_booking_project.Repository.SeatRepository;
@@ -15,6 +17,8 @@ public class SeatService {
 
     @Autowired
     private SeatRepository seatRepository;
+    @Autowired
+    private EventRepository eventRepository;
 
     @Transactional
     public SeatDTO saveSeat(SeatDTO seatDTO) {
@@ -27,6 +31,12 @@ public class SeatService {
     public Optional<Seats> getSeatById(Integer rowID) {
         return seatRepository.findById(rowID);
     }
+
+    public List<Seats> getSeatsByEvent(Integer eventID) {
+        Event event = eventRepository.findById(eventID).orElseThrow(null);
+        return seatRepository.findSeatsByEvent(event);  // Assuming the method exists in the repository
+    }
+
 
     public void deleteSeat(Integer rowID) {
         seatRepository.deleteById(rowID);
@@ -45,7 +55,16 @@ public class SeatService {
             existingSeat.setReservedSeats(seatDTO.getReservedSeats());
             existingSeat.setSelectedSeats(seatDTO.getSelectedSeats());
             existingSeat.setPricePerSeat(seatDTO.getPricePerSeat());
-            existingSeat.setEventID(seatDTO.getEventID());
+
+            // Fetch the Event object using eventID
+            if (seatDTO.getEventID() != null) {
+                Event event = eventRepository.findByEventId(seatDTO.getEventID());
+                if (event != null) {
+                    existingSeat.setEventID(event);  // Set the Event object
+                } else {
+                    throw new RuntimeException("Event with EventID " + seatDTO.getEventID() + " not found.");
+                }
+            }
 
             // Save and return updated DTO
             Seats updatedSeat = seatRepository.save(existingSeat);
@@ -55,6 +74,7 @@ public class SeatService {
         }
     }
 
+
     // Helper Methods for Conversion between DTO and Entity
     private Seats convertDTOToEntity(SeatDTO seatDTO) {
         Seats seat = new Seats();
@@ -63,10 +83,21 @@ public class SeatService {
         seat.setReservedSeats(seatDTO.getReservedSeats());
         seat.setSelectedSeats(seatDTO.getSelectedSeats());
         seat.setPricePerSeat(seatDTO.getPricePerSeat());
-        seat.setEventID(seatDTO.getEventID());
         seat.setTheaterId(seatDTO.getTheaterId());
-        return seat;
+
+        if (seatDTO.getEventID() != null) {
+            // Fetch the Event object using the eventID
+            Event event = eventRepository.findByEventId(seatDTO.getEventID());
+            if (event != null) {
+                seat.setEventID(event);  // Set the Event object
+            } else {
+                throw new RuntimeException("Event with EventID " + seatDTO.getEventID() + " not found.");
+            }
+        }
+
+        return seat;  // Return the populated Seat entity
     }
+
 
     private SeatDTO convertEntityToDTO(Seats seat) {
         SeatDTO seatDTO = new SeatDTO();
@@ -75,8 +106,11 @@ public class SeatService {
         seatDTO.setReservedSeats(seat.getReservedSeats());
         seatDTO.setSelectedSeats(seat.getSelectedSeats());
         seatDTO.setPricePerSeat(seat.getPricePerSeat());
-        seatDTO.setEventID(seat.getEventID());
         seatDTO.setTheaterId(seat.getTheaterId());
+
+        if (seat.getEventID() != null) {
+            seatDTO.setEventID(seat.getEventID().getEventID());
+        }
 
         return seatDTO;
     }

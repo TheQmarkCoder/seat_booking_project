@@ -1,4 +1,4 @@
-package com.booking.booking.entities;
+package com.seat_booking_project.seat_booking_project.Entities;
 
 import jakarta.persistence.*;
 import java.util.Date;
@@ -9,8 +9,14 @@ public class Payment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "payment_ID")
     private int paymentId;
 
+    @OneToOne
+    @JoinColumn(name = "booking_ID", referencedColumnName = "booking_ID", nullable = false)
+    private TicketBooking booking;
+
+    @Column(name="payment_amount", nullable = false)
     private int paymentAmount;
 
     @Enumerated(EnumType.STRING)
@@ -19,8 +25,6 @@ public class Payment {
 
     @Column(nullable = false)
     private boolean paymentStatus;
-
-    private int bookingId;
 
     @Temporal(TemporalType.DATE)
     private Date date;
@@ -58,12 +62,12 @@ public class Payment {
         this.paymentStatus = paymentStatus;
     }
 
-    public int getBookingId() {
-        return bookingId;
+    public TicketBooking getBookingId() {
+        return booking;
     }
 
-    public void setBookingId(int bookingId) {
-        this.bookingId = bookingId;
+    public void setBookingId(TicketBooking booking) {
+        this.booking = booking;
     }
 
     public Date getDate() {

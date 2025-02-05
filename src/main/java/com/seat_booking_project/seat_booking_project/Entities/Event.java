@@ -1,4 +1,4 @@
-package com.booking.booking.entities;
+package com.seat_booking_project.seat_booking_project.Entities;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Entity
-@Table(name = "event")
+@Table(name = "event_details")
 public class Event {
 
     @Id

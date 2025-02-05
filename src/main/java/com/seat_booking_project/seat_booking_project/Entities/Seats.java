@@ -28,8 +28,10 @@ public class Seats {
     @Column(name = "price_per_seat")
     private Integer pricePerSeat;
 
-    @Column(name = "event_ID")
-    private Integer eventID;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "event_ID", referencedColumnName = "event_ID")
+    private Event eventID;
+
 
     @Version
     private Long version = 1L;
@@ -93,11 +95,11 @@ public class Seats {
         this.pricePerSeat = pricePerSeat;
     }
 
-    public Integer getEventID() {
+    public Event getEventID() {
         return eventID;
     }
 
-    public void setEventID(Integer eventID) {
+    public void setEventID(Event eventID) {
         this.eventID = eventID;
     }
 

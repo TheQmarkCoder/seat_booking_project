@@ -1,7 +1,7 @@
-package com.booking.booking.Service;
+package com.seat_booking_project.seat_booking_project.Services;
 
-import com.booking.booking.entities.Event;
-import com.booking.booking.repositories.EventRepository;
+import com.seat_booking_project.seat_booking_project.Entities.Event;
+import com.seat_booking_project.seat_booking_project.Repository.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

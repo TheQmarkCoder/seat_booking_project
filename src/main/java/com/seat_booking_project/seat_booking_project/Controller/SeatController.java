@@ -61,6 +61,17 @@ public class SeatController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/event/{eventID}")
+    public ResponseEntity<List<SeatDTO>> getSeatsByEvent(@PathVariable Integer eventID) {
+        List<Seats> seats = seatService.getSeatsByEvent(eventID);
+        if (seats.isEmpty()) {
+            return ResponseEntity.noContent().build();  // No seats found for the event
+        }
+        List<SeatDTO> seatDTOs = convertEntityListToDTOList(seats);
+        return ResponseEntity.ok(seatDTOs);  // Return list of SeatDTOs for the event
+    }
+
+
     @GetMapping("/theater/{theaterID}/surrogate/{surrogate}")
     public ResponseEntity<List<SeatDTO>> getSeatsByTheaterAndSurrogate(
             @PathVariable Integer theaterID,
@@ -87,7 +98,7 @@ public class SeatController {
         seatDTO.setReservedSeats(seat.getReservedSeats());
         seatDTO.setSelectedSeats(seat.getSelectedSeats());
         seatDTO.setPricePerSeat(seat.getPricePerSeat());
-        seatDTO.setEventID(seat.getEventID());
+        seatDTO.setEventID(seat.getEventID() != null ? seat.getEventID().getEventID() : null);
         seatDTO.setTheaterId(seat.getTheaterId());
 
         return seatDTO;

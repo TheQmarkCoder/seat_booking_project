@@ -1,7 +1,7 @@
-package com.booking.booking.Controller;
+package com.seat_booking_project.seat_booking_project.Controller;
 
-import com.booking.booking.entities.Event;
-import com.booking.booking.Service.EventService;
+import com.seat_booking_project.seat_booking_project.Entities.Event;
+import com.seat_booking_project.seat_booking_project.Services.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("/events")
 public class  EventController {
 
