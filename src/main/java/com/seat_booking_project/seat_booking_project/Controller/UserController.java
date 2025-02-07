@@ -12,6 +12,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/users")
+@CrossOrigin(origins = "http://localhost:5173")
 public class UserController {
 
     @Autowired
@@ -30,6 +31,18 @@ public class UserController {
         Optional<User> user = userService.getUserById(id);
         return user.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody User user) {
+        Optional<User> foundUser = userService.getUserByEmail(user.getEmail());
+
+        // Check if user exists and password matches directly (no bcrypt)
+        if (foundUser.isPresent() && foundUser.get().getPassword().equals(user.getPassword())) {
+            return new ResponseEntity<>(foundUser.get(), HttpStatus.OK); // Successful login
+        } else {
+            return new ResponseEntity<>("Invalid email or password", HttpStatus.UNAUTHORIZED); // Authentication failure
+             }
     }
 
     // Add a new user
