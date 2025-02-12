@@ -87,11 +87,12 @@ const MoviesPage = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredMovies.map((movie) => (
               <div
-                key={movie.movieId}
-                className="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
+                key={movie.movie_id}
+                className="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+                onClick={() => navigate(`/movie/${movie.movie_id}`)}
               >
                 <img
-                  src={`/images/movies/${movie.image_name}`}
+                  src={`/images/movies/${movie.imageName}`}
                   alt={movie.movieName}
                   className="w-full h-48 object-cover"
                 />
