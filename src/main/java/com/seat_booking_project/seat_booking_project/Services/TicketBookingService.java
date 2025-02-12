@@ -1,6 +1,8 @@
 package com.seat_booking_project.seat_booking_project.Services;
 
+import com.seat_booking_project.seat_booking_project.Entities.Event;
 import com.seat_booking_project.seat_booking_project.Entities.Seats;
+import com.seat_booking_project.seat_booking_project.Repository.EventRepository;
 import com.seat_booking_project.seat_booking_project.Repository.SeatRepository;
 import com.seat_booking_project.seat_booking_project.dto.TicketBookingDTO;
 import com.seat_booking_project.seat_booking_project.Entities.TicketBooking;
@@ -18,13 +20,14 @@ public class TicketBookingService {
 
     @Autowired
     private SeatRepository seatRepository;
+    @Autowired
+    private EventRepository eventRepository;
 
     @Autowired
     public TicketBookingService(TicketBookingRepository ticketBookingRepository) {
         this.ticketBookingRepository = ticketBookingRepository;
     }
 
-    // Create or Save a Ticket Booking
     public TicketBooking saveTicketBooking(TicketBookingDTO ticketBookingDTO) {
         // Convert DTO to Entity
         TicketBooking ticketBooking = toEntity(ticketBookingDTO);
@@ -43,7 +46,7 @@ public class TicketBookingService {
         return ticketBooking.map(this::toDTO);
     }
 
-    // Update Ticket Booking
+        // Update Ticket Booking
     public TicketBookingDTO updateTicketBooking(Integer bookingId, TicketBookingDTO updatedBookingDTO) {
         if (ticketBookingRepository.existsById(bookingId)) {
             // Convert DTO to Entity and set the ID for update
@@ -72,10 +75,13 @@ public class TicketBookingService {
         dto.setDate(ticketBooking.getDate());
         dto.setNoOfTickets(ticketBooking.getNoOfTickets());
         dto.setStatus(ticketBooking.getStatus());
-        dto.setEventId(ticketBooking.getEventId());
         dto.setUserId(ticketBooking.getUserId());
 
         // Adding the rowId from Seat entity
+        if (ticketBooking.getEventId() != null) {
+            dto.setEventId(ticketBooking.getEventId().getEventID());  // Assuming getRowId() method in Seats entity
+        }
+
         if (ticketBooking.getSeat() != null) {
             dto.setRowId(ticketBooking.getSeat().getRowID());  // Assuming getRowId() method in Seats entity
         }
@@ -90,7 +96,6 @@ public class TicketBookingService {
         ticketBooking.setDate(ticketBookingDTO.getDate());
         ticketBooking.setNoOfTickets(ticketBookingDTO.getNoOfTickets());
         ticketBooking.setStatus(ticketBookingDTO.getStatus());
-        ticketBooking.setEventId(ticketBookingDTO.getEventId());
         ticketBooking.setUserId(ticketBookingDTO.getUserId());
 
         // Look up the Seat entity by rowId and set it to the TicketBooking
@@ -105,6 +110,21 @@ public class TicketBookingService {
             }
         }
 
+        if (ticketBookingDTO.getEventId() != null) {
+            // Find the Seat by rowId
+            Event eventId = eventRepository.findByEventId(ticketBookingDTO.getEventId());  // Assumes this method exists
+            if (eventId != null) {
+                ticketBooking.setEventId(eventId);  // Link the found Seat to the TicketBooking
+            } else {
+                // Optionally, throw an error or handle the case where the seat doesn't exist
+                throw new RuntimeException("Event with EventID " + ticketBookingDTO.getEventId() + " not found.");
+            }
+        }
+
         return ticketBooking;
+    }
+    public TicketBooking getBookingById(int bookingId) {
+        Optional<TicketBooking> booking = ticketBookingRepository.findById(bookingId);
+        return booking.orElse(null);
     }
 }

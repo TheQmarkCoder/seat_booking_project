@@ -1,17 +1,16 @@
 package com.seat_booking_project.seat_booking_project.Entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Column;
+import jakarta.persistence.*;
 
 @Entity
+@Table(name = "user") // Matches the table name in the database
 public class User {
 
     @Id
-    private int userId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int user_ID; // Primary Key
 
-
-    @Column(length = 30, nullable = false)
+    @Column(length = 30)
     private String username;
 
     @Column(length = 20)
@@ -20,22 +19,24 @@ public class User {
     @Column(length = 20)
     private String location;
 
-    @Column
-    private Integer phoneNumber;
+    @Column(name = "phone_number", nullable = true)
+    private Long phone_number; // Changed to Long to handle larger values
 
-    @Column(length = 20)
+    @Column(length = 40, unique = true)
     private String email;
+
+
 
     @Column(length = 10)
     private String role;
 
-    // Getters and Setters
-    public int getUserId() {
-        return userId;
+    // Getters and setters
+    public int getUser_ID() {
+        return user_ID;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setUser_ID(int user_ID) {
+        this.user_ID = user_ID;
     }
 
     public String getUsername() {
@@ -62,12 +63,12 @@ public class User {
         this.location = location;
     }
 
-    public Integer getPhoneNumber() {
-        return phoneNumber;
+    public Long getPhone_number() {
+        return phone_number;
     }
 
-    public void setPhoneNumber(Integer phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public void setPhone_number(Long phone_number) {
+        this.phone_number = phone_number;
     }
 
     public String getEmail() {
@@ -85,4 +86,6 @@ public class User {
     public void setRole(String role) {
         this.role = role;
     }
+
+
 }

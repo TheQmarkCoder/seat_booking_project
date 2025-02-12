@@ -1,5 +1,6 @@
 package com.seat_booking_project.seat_booking_project.Entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Getter;
 
@@ -33,6 +34,13 @@ public class Movie {
 
     @Column(name = "ratings")
     private double ratings;
+
+    @Column(name = "description" ,length = 2000  )
+    private String description;
+
+    @JsonProperty("image_name")
+    @Column(name = "imageName", length = 100)
+    private String imageName;
 
     // Getters and Setters
 
@@ -98,5 +106,21 @@ public class Movie {
 
     public void setRatings(double ratings) {
         this.ratings = ratings;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getImageName() {
+        return imageName;
+    }
+
+    public void setImageName(String imageName) {
+        this.imageName = imageName;
     }
 }

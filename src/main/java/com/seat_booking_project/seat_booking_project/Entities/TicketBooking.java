@@ -21,8 +21,9 @@ public class TicketBooking {
     @Column(name = "status", length = 20)
     private String status;
 
-    @Column(name = "event_ID")
-    private Integer eventId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "event_ID", referencedColumnName = "event_ID")
+    private Event eventId;
 
     @Column(name = "user_ID")
     private Integer userId;
@@ -64,11 +65,11 @@ public class TicketBooking {
         this.status = status;
     }
 
-    public Integer getEventId() {
+    public Event getEventId() {
         return eventId;
     }
 
-    public void setEventId(Integer eventId) {
+    public void setEventId(Event eventId) {
         this.eventId = eventId;
     }
 
