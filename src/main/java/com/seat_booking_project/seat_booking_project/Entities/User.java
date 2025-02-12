@@ -22,8 +22,10 @@ public class User {
     @Column(name = "phone_number", nullable = true)
     private Long phone_number; // Changed to Long to handle larger values
 
-    @Column(length = 20, unique = true)
+    @Column(length = 40, unique = true)
     private String email;
+
+
 
     @Column(length = 10)
     private String role;
@@ -84,4 +86,6 @@ public class User {
     public void setRole(String role) {
         this.role = role;
     }
+
+
 }

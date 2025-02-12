@@ -21,8 +21,9 @@ public class Theater {
     @Column(name = "show_timings")
     private LocalDateTime showTimings;
 
-    @Column(name = "movie_ID")
-    private Integer movieID;
+    @ManyToOne
+    @JoinColumn(name = "movie_ID" , referencedColumnName = "movie_ID")
+    private Movie movieID;
 
     @Column(name = "screen_ID")
     private Integer screenID;
@@ -72,11 +73,11 @@ public class Theater {
         this.showTimings = showTimings;
     }
 
-    public Integer getMovieID() {
+    public Movie getMovieID() {
         return movieID;
     }
 
-    public void setMovieID(Integer movieID) {
+    public void setMovieID(Movie movieID) {
         this.movieID = movieID;
     }
 

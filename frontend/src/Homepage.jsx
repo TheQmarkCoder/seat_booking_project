@@ -1,27 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 import profile from './assets/profilepic.jpg';
+import Sidebar from './Sidebar.jsx';
 
 const Homepage = () => {
   const [movies, setMovies] = useState([]);
   const [events, setEvents] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [user, setUser] = useState(null); // Track user info after login
+  const [user, setUser] = useState(null);
+  const [sidebarVisible, setSidebarVisible] = useState(false);
   const navigate = useNavigate();
 
+  const banners = [
+    { image: '/images/ads/ad1.jpg', link: 'https://www.example.com/ad1' },
+    { image: '/images/ads/ad2.jpg', link: 'https://www.example.com/ad2' },
+    { image: '/images/ads/ad3.webp', link: 'https://www.example.com/ad3' },
+    { image: '/images/ads/ad4.jpg', link: 'https://www.example.com/ad4' },
+  ];
+
   useEffect(() => {
-    // Fetching movies and events from the backend
-    axios.get('http://localhost:8080/movies')
-      .then(response => setMovies(response.data))
-      .catch(error => console.error('Error fetching movies:', error));
+    axios
+      .get('http://localhost:8080/movies')
+      .then((response) => setMovies(response.data))
+      .catch((error) => console.error('Error fetching movies:', error));
 
-    axios.get('http://localhost:8080/events')
-      .then(response => setEvents(response.data))
-      .catch(error => console.error('Error fetching events:', error));
+    axios
+      .get('http://localhost:8080/events')
+      .then((response) => setEvents(response.data))
+      .catch((error) => console.error('Error fetching events:', error));
 
-    // Simulate fetching user info if logged in (replace with actual API call)
-    const loggedInUser = localStorage.getItem('user'); // Retrieve user from storage
+    const loggedInUser = localStorage.getItem('user');
     if (loggedInUser) {
       setUser(JSON.parse(loggedInUser));
     }
@@ -29,91 +43,165 @@ const Homepage = () => {
 
   const handleSignOut = () => {
     setUser(null);
-    localStorage.removeItem('user'); // Clear user from storage
+    localStorage.removeItem('user');
+    setSidebarVisible(false);
   };
 
-  // Filter movies based on searchTerm
-  const filteredMovies = movies.filter(movie =>
+  const filteredMovies = movies.filter((movie) =>
     (movie.movieName || "").toLowerCase().includes((searchTerm || "").toLowerCase())
   );
 
-  // Filter events based on searchTerm
-  const filteredEvents = events.filter(event =>
+  const filteredEvents = events.filter((event) =>
     (event.event_name || "").toLowerCase().includes((searchTerm || "").toLowerCase())
   );
 
   return (
-    <div className="container mx-auto p-4 bg-[#d9d9d9] min-h-screen">
-      <header className="flex justify-between items-center bg-[#3c6e71] text-white p-4 rounded-md shadow-md">
-        <input
-          type="text"
-          placeholder="Search movies or events..."
-          className="p-2 rounded w-1/2 font-serif text-black border border-white-300 bg-neutral-50"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
+    <div className="w-full h-full bg-[#f4f4f4] flex flex-col">
+      {/* Sidebar */}
+      <Sidebar
+        sidebarVisible={sidebarVisible}
+        setSidebarVisible={setSidebarVisible}
+        user={user}
+        profile={profile}
+        handleSignOut={handleSignOut}
+      />
+      {/* Header */}
+      <header className="flex justify-between items-center bg-[#1e293b] text-white p-4 shadow-md">
+        <div className="flex items-center space-x-4">
+          <h1 className="text-xl font-bold">The<span className="text-yellow-400">Popcorn</span>Bucket</h1>
+          <input
+            type="text"
+            placeholder="Search movies or events..."
+            className="p-2 w-200 rounded font-semibold text-black border border-gray-300 bg-white"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
         <div className="flex items-center space-x-4">
           {user ? (
-            <div className="flex items-center space-x-2">
-              <span className="text-white font-medium">Welcome, {user.username}!</span>
-              <button
-                className="bg-[#ff6b6b] text-white px-4 py-2 rounded-md hover:bg-[#ff3b3b] transition-colors"
-                onClick={handleSignOut}
-              >
-                Sign Out
-              </button>
-            </div>
+            <span className="text-white font-normal">Welcome, {user.username}!</span>
           ) : (
             <button
-              className="bg-[#ff6b6b] text-white px-4 py-2 rounded-md hover:bg-[#ff3b3b] transition-colors"
+              className="border border-white text-white px-4 py-2 rounded-md hover:bg-white hover:text-[#1e293b] transition-colors"
               onClick={() => navigate('/login')}
             >
               Sign In
             </button>
           )}
-          <img src={profile} alt="Profile" className="h-10 w-10 rounded-full border-2 border-white" />
+          <img
+            src={profile}
+            alt="Profile"
+            className="h-10 w-10 rounded-full border-2 border-white cursor-pointer"
+            onClick={() => setSidebarVisible(!sidebarVisible)}
+          />
         </div>
       </header>
 
-      <section className="mt-8">
-        <h2 className="text-2xl font-serif text-[#284b63] mb-4">Movies</h2>
-        <div className="grid grid-cols-3 gap-4">
-          {filteredMovies.length > 0 ? (
-            filteredMovies.map(movie => (
-              <div
-                className="bg-white shadow-md p-4 rounded-lg border-l-4 border-[#353535] hover:shadow-lg transition-shadow"
-                key={movie.movieId}
-              >
-                <h3 className="text-lg font-medium text-[#073b4c]">{movie.movieName}</h3>
-                <p className="text-sm text-gray-600">Genre: {movie.genre}</p>
-                <p className="text-sm text-gray-600">Duration: {movie.duration}</p>
-                <p className="text-sm text-gray-600">Language: {movie.language}</p>
-                <p className="text-sm text-gray-600">Ratings: {movie.ratings}</p>
-              </div>
-            ))
-          ) : (
-            <p className="text-gray-500">No movies available</p>
-          )}
-        </div>
+      {/* Main Content */}
+      <main className="flex-1 overflow-y-auto">
+        <section className="w-full max-w-[1200px] mx-auto mt-4">
+          <Swiper
+            modules={[Navigation, Pagination, Autoplay]}
+            navigation
+            pagination={{ clickable: true }}
+            spaceBetween={10}
+            slidesPerView={1}
+            autoplay={{ delay: 5000, disableOnInteraction: false }}
+            loop={true}
+            className="rounded-lg overflow-hidden shadow-md"
+          >
+            {banners.map((banner, index) => (
+              <SwiperSlide key={index}>
+                <a href={banner.link} target="_blank" rel="noopener noreferrer">
+                  <img
+                    src={banner.image}
+                    alt={`Advertisement ${index + 1}`}
+                    className="w-full h-90 object-cover"
+                  />
+                </a>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </section>
 
-        <h2 className="text-2xl font-serif text-[#284b63] mt-8 mb-4">Events</h2>
-        <div className="grid grid-cols-3 gap-4">
-          {filteredEvents.length > 0 ? (
-            filteredEvents.map(event => (
-              <div
-                className="bg-white shadow-md p-4 rounded-lg border-l-4 border-[#353535] hover:shadow-lg transition-shadow"
-                key={event.event_ID}
-              >
-                <h3 className="text-lg font-medium text-[#073b4c]">{event.event_name}</h3>
-                <p className="text-sm text-gray-600">Address: {event.event_address}</p>
-                <p className="text-sm text-gray-600">Type: {event.event_type}</p>
-              </div>
-            ))
-          ) : (
-            <p className="text-gray-500">No events available</p>
-          )}
-        </div>
-      </section>
+        <section className="mt-8 px-4">
+          <h2 className="text-3xl font-semibold text-[#1e293b] mb-6">Movies</h2>
+          <Swiper
+            modules={[Navigation, Pagination]}
+            navigation
+            pagination={{ clickable: true }}
+            spaceBetween={20}
+            slidesPerView={3}
+            breakpoints={{
+              1024: { slidesPerView: 3 },
+              768: { slidesPerView: 2 },
+              640: { slidesPerView: 1 },
+            }}
+            className="px-8"
+          >
+            {filteredMovies.length > 0 ? (
+              filteredMovies.map((movie) => (
+                <SwiperSlide key={movie.movieId}>
+                  <div className="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
+                    <img
+                      src={`/images/movies/${movie.image_name}`}
+                      alt={movie.movieName}
+                      className="w-full h-48 object-cover"
+                    />
+                    <div className="p-4">
+                      <h3 className="text-lg font-bold text-[#1e293b]">{movie.movieName}</h3>
+                      <p className="text-sm text-gray-600">{movie.genre}</p>
+                      <p className="text-sm text-gray-600">Rating: {movie.ratings}</p>
+                    </div>
+                  </div>
+                </SwiperSlide>
+              ))
+            ) : (
+              <p className="text-gray-500">No movies available</p>
+            )}
+          </Swiper>
+
+          <h2 className="text-3xl font-semibold text-[#1e293b] mt-12 mb-6">Events</h2>
+          <Swiper
+            modules={[Navigation, Pagination]}
+            navigation
+            pagination={{ clickable: true }}
+            spaceBetween={20}
+            slidesPerView={3}
+            breakpoints={{
+              1024: { slidesPerView: 3 },
+              768: { slidesPerView: 2 },
+              640: { slidesPerView: 1 },
+            }}
+            className="px-8"
+          >
+            {filteredEvents.length > 0 ? (
+              filteredEvents.map((event) => (
+                <SwiperSlide key={event.event_ID}>
+                  <div className="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
+                    <img
+                      src={`/images/events/${event.image}`}
+                      alt={event.event_name}
+                      className="w-full h-48 object-cover"
+                    />
+                    <div className="p-4">
+                      <h3 className="text-lg font-bold text-[#1e293b]">{event.event_name}</h3>
+                      <p className="text-sm text-gray-600">{event.event_address}</p>
+                      <p className="text-sm text-gray-600">Type: {event.event_type}</p>
+                    </div>
+                  </div>
+                </SwiperSlide>
+              ))
+            ) : (
+              <p className="text-gray-500">No events available</p>
+            )}
+          </Swiper>
+        </section>
+
+        <footer className="w-full bg-[#1e293b] text-white text-center py-10 mt-40">
+          <p>&copy; 2025 ThePopcornBucket. All rights reserved.</p>
+        </footer>
+      </main>
     </div>
   );
 };

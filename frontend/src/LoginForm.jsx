@@ -41,13 +41,13 @@ const SignUpLoginForm = () => {
     try {
       const response = await axios.post('http://localhost:8080/users', formData);
       if (response.status === 201) {
-        alert('User added successfully!');
-        
+        const { user_ID, username, email } = response.data;
+
         // Store user data in localStorage
-        localStorage.setItem('user', JSON.stringify({ 
-          username: formData.username, 
-          email: formData.email 
-        }));
+        localStorage.setItem(
+          'user',
+          JSON.stringify({ user_ID , username, email })
+        );
 
         setFormData({
           username: '',
@@ -58,6 +58,7 @@ const SignUpLoginForm = () => {
           role: ''
         });
 
+        alert('User added successfully!');
         navigate('/home'); // Redirect to Homepage
       }
     } catch (error) {
@@ -76,12 +77,15 @@ const SignUpLoginForm = () => {
     try {
       const response = await axios.post('http://localhost:8080/users/login', loginData);
       if (response.status === 200) {
-        alert('Login successful!');
-        
-        // Store user data in localStorage
-        const { username, email } = response.data; // Assuming API returns username and email
-        localStorage.setItem('user', JSON.stringify({ username }));
+        const { user_ID, username, email } = response.data;
 
+        // Store user data in localStorage
+        localStorage.setItem(
+          'user',
+          JSON.stringify({ user_ID, username, email })
+        );
+
+        alert('Login successful!');
         navigate('/home'); // Redirect to Homepage
       }
     } catch (error) {
@@ -95,13 +99,13 @@ const SignUpLoginForm = () => {
   return (
     <div className="split-screen">
       <div className="left-panel">
-        <h1>Welcome Back!</h1>
-        <p>To keep connected with us, please login with your personal info.</p>
+        <h1>Welcome to The<span className="text-yellow-400">Popcorn</span>Bucket</h1>
+        <p>Time for some <span className="text-yellow-400">buttery</span> fun!</p>
         <button className="switch-button" onClick={() => setIsLogin(true)}>Login</button>
       </div>
       <div className="right-panel">
-        <h1>Create Account</h1>
-        <p>Enter your details to get started.</p>
+        <h1>{isLogin ? 'Login' : 'Create Account'}</h1>
+        <p>{isLogin ? 'Sign in to continue.' : 'Enter your details to get started.'}</p>
         <form onSubmit={isLogin ? handleLogin : handleSubmit} className="auth-form">
           {!isLogin && (
             <>
@@ -132,15 +136,18 @@ const SignUpLoginForm = () => {
                 required
                 className="input-field"
               />
-              <input
-                type="text"
+              <select
                 name="location"
                 value={formData.location}
                 onChange={handleChange}
-                placeholder="Enter your location"
                 required
                 className="input-field"
-              />
+              >
+                <option value="">Select your location</option>
+                <option value="Chennai">Chennai</option>
+                <option value="Mumbai">Mumbai</option>
+                <option value="Delhi">Delhi</option>
+              </select>
               <input
                 type="text"
                 name="phone_number"

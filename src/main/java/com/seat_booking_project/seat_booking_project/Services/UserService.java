@@ -24,9 +24,8 @@ public class UserService {
         return userRepository.findById(id);
     }
 
-    // Add a new user
-    public void addUser(User user) {
-        userRepository.save(user);
+    public User addUser(User user) {
+        return userRepository.save(user); // Return the saved user object
     }
 
     // Update an existing user

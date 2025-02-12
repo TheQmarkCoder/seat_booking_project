@@ -72,6 +72,12 @@ public class Event {
     @Column(name = "age_restriction")
     private Boolean ageRestriction;
 
+    @Column(name="image",length = 100)
+    private String image;
+
+    @Column(name="description" , length = 2000)
+    private String description;
+
     // Getters and Setters
 
     public Integer getEventID() {
@@ -192,5 +198,21 @@ public class Event {
 
     public void setAgeRestriction(Boolean ageRestriction) {
         this.ageRestriction = ageRestriction;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

@@ -7,7 +7,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -45,9 +47,8 @@ public class UserController {
              }
     }
 
-    // Add a new user
     @PostMapping
-    public ResponseEntity<String> addUser(@RequestBody User user) {
+    public ResponseEntity<Object> addUser(@RequestBody User user) {
         try {
             // Ensure required fields are not null or empty
             if (user.getUsername() == null || user.getUsername().trim().isEmpty() ||
@@ -57,7 +58,7 @@ public class UserController {
                 return new ResponseEntity<>("Missing required fields", HttpStatus.BAD_REQUEST);
             }
 
-            // Validate email format (optional, based on requirements)
+            // Validate email format
             if (!user.getEmail().matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
                 return new ResponseEntity<>("Invalid email format", HttpStatus.BAD_REQUEST);
             }
@@ -69,14 +70,22 @@ public class UserController {
             }
 
             // Save the user
-            userService.addUser(user);
-            return new ResponseEntity<>("User added successfully", HttpStatus.CREATED);
+            User savedUser = userService.addUser(user);
+
+            // Return userId, username, and email in the response
+            Map<String, Object> response = new HashMap<>();
+            response.put("user_ID", savedUser.getUser_ID());
+            response.put("username", savedUser.getUsername());
+            response.put("email", savedUser.getEmail());
+
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
 
         } catch (Exception e) {
             e.printStackTrace();  // Log the error
             return new ResponseEntity<>("Error adding user: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 
     @PutMapping("/{user_ID}")
     public ResponseEntity<String> updateUser(@PathVariable("user_ID") int id, @RequestBody User user) {
